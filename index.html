@@ -11,23 +11,18 @@
    </body>
 </html>
 <script>
-   var canvas = document.getElementById('canvas');
-   var ctx = canvas.getContext('2d');
-   var video = document.getElementById('video');
+let animation_handle;
+const canvas = document.querySelector("canvas");
+const ctx = canvas.getContext("2d");
+const video = document.querySelector("video");
+video.addEventListener('loadeddata', video_load_callback, false);
 
-   // set canvas size = video size when known
-   video.addEventListener('loadedmetadata', function() {
-     canvas.width = video.videoWidth;
-     canvas.height = video.videoHeight;
-   });
-
-   video.addEventListener('play', function() {
-     var $this = this; //cache
-     (function loop() {
-       if (!$this.paused && !$this.ended) {
-         ctx.drawImage($this, 0, 0);
-         setTimeout(loop, 1000 / 30); // drawing at 30fps
-       }
-     })();
-   }, 0);
+function video_load_callback() {
+    video.cancelVideoFrameCallback(animation_handle);
+    step()
+}
+function step() { // update the canvas when a video proceeds to next frame
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    animation_handle = video.requestVideoFrameCallback(step);
+}
 </script>
